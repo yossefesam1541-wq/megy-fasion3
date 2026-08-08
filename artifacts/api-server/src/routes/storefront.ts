@@ -1,7 +1,7 @@
 import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { rateLimit } from "express-rate-limit";
-import { and, asc, desc, eq, gte, ilike, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, ilike, inArray, or, sql } from "drizzle-orm";
 import {
   AdminLoginBody,
   CreateAdminProductBody,
@@ -229,7 +229,7 @@ router.post("/orders", createOrderLimiter, async (req, res): Promise<void> => {
       const products = await tx
         .select()
         .from(productsTable)
-        .where(sql`${productsTable.id} IN ${sql.join(productIds.map((id) => sql`${id}`), sql`, `)}`);
+        .where(inArray(productsTable.id, productIds));
       const productById = new Map(products.map((product) => [product.id, product]));
 
       let total = 0;

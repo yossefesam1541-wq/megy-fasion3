@@ -7,6 +7,7 @@ import router from "./routes";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
+app.set("trust proxy", 1);
 
 // Allow-list of origins that are permitted to call the API with credentials.
 // STORE_ORIGIN should be set to the storefront's public URL in every environment.
