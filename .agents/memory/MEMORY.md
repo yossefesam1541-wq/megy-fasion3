@@ -1,0 +1,1 @@
+- [Imported API rebuild](imported-api-rebuild.md) — after replacing backend source during an import, restart the managed API workflow so its bundled output reflects the new routes.
