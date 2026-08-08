@@ -1,6 +1,6 @@
-# [Project name]
+# Medy Tech
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+متجر عربي متجاوب يجمع الملابس المختارة والموازين الدقيقة، مع سلة مشتريات ودفع عند الاستلام ولوحة متابعة للمتجر.
 
 ## Run & Operate
 
@@ -22,15 +22,26 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/medy-tech` — واجهة المتجر RTL، الصفحات العامة، السلة، الدفع عند الاستلام، ولوحة الإدارة.
+- `artifacts/api-server` — مسارات المنتجات والأقسام والطلبات وملخص لوحة الإدارة.
+- `lib/api-spec/openapi.yaml` — مصدر عقود API.
+- `lib/db/src/schema/store.ts` — جداول المنتجات والطلبات.
+- `artifacts/medy-tech/public/images` — صور المنتجات الافتتاحية.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- واجهة المتجر تستخدم RTL وواجهة عربية أولًا، مع دعم تبديل الوضع الفاتح/الداكن.
+- السلة تحفظ محليًا للزائر، بينما إرسال الطلب يتم عبر API حقيقي مع الدفع عند الاستلام فقط.
+- يتم استخدام بيانات API عند توفرها مع بيانات احتياطية لعدم كسر تجربة التصفح أثناء تعطل الخادم.
+- كتالوج الملابس والموازين موحّد في جدول منتجات واحد مع مواصفات وخيارات مرنة لكل قسم.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- الصفحة الرئيسية تعرض القسمين والمنتجات المختارة ومزايا الثقة.
+- صفحات الأقسام تدعم البحث والفرز، وصفحة المنتج تدعم الخيارات والكمية.
+- السلة وإتمام الطلب تدعمان بيانات التوصيل وتسجيل طلب COD وإظهار رقم الطلب.
+- لوحة الإدارة تعرض الطلبات والإيرادات والمخزون والتنبيهات والأكثر مبيعًا.
+- زر واتساب ثابت للتواصل المباشر مع المتجر.
 
 ## User preferences
 
@@ -38,7 +49,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- بعد تعديل `lib/api-spec/openapi.yaml` يجب تشغيل codegen قبل فحص الحزم أو استخدام hooks جديدة.
+- يجب تشغيل الخادم والواجهة عبر الـ workflows لأن `PORT` و`BASE_PATH` يحقنان تلقائيًا.
+- صور المنتجات العامة تستخدم مسارات `/images/...` وتخدمها واجهة Vite من `public`.
 
 ## Pointers
 

@@ -10,6 +10,10 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: storefront
+    description: Storefront catalog and checkout
+  - name: admin
+    description: Admin overview
 paths:
   /healthz:
     get:
@@ -24,6 +28,225 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [storefront]
+      summary: List storefront categories
+      responses:
+        "200":
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+  /products:
+    get:
+      operationId: listProducts
+      tags: [storefront]
+      summary: List and filter products
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [newest, price_asc, price_desc]
+        - name: limit
+          in: query
+          schema:
+            type: number
+            minimum: 1
+            maximum: 50
+      responses:
+        "200":
+          description: Products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [storefront]
+      summary: Get a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Product not found
+  /orders:
+    post:
+      operationId: createOrder
+      tags: [storefront]
+      summary: Create a cash on delivery order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Created order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Invalid order
+  /admin/overview:
+    get:
+      operationId: getAdminOverview
+      tags: [admin]
+      summary: Get admin dashboard summary
+      responses:
+        "200":
+          description: Admin overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminOverview"
+  /admin/auth/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Sign in to the admin dashboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginInput"
+      responses:
+        "200":
+          description: Signed in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSession"
+        "401":
+          description: Invalid credentials
+  /admin/auth/session:
+    get:
+      operationId: getAdminSession
+      tags: [admin]
+      summary: Check the current admin session
+      responses:
+        "200":
+          description: Active session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSession"
+        "401":
+          description: Not signed in
+  /admin/auth/logout:
+    post:
+      operationId: adminLogout
+      tags: [admin]
+      summary: Sign out of the admin dashboard
+      responses:
+        "200":
+          description: Signed out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogoutResult"
+  /admin/products:
+    get:
+      operationId: listAdminProducts
+      tags: [admin]
+      summary: List products for administration
+      responses:
+        "200":
+          description: Products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createAdminProduct
+      tags: [admin]
+      summary: Add a product to the catalog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Invalid product
+  /admin/orders:
+    get:
+      operationId: listAdminOrders
+      tags: [admin]
+      summary: List customer orders for administration
+      responses:
+        "200":
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminOrder"
+  /admin/orders/{id}/status:
+    patch:
+      operationId: updateAdminOrderStatus
+      tags: [admin]
+      summary: Update an order status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatusInput"
+      responses:
+        "200":
+          description: Updated order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminOrder"
+        "404":
+          description: Order not found
 components:
   schemas:
     HealthStatus:
@@ -33,4 +256,268 @@ components:
           type: string
       required:
         - status
+    Category:
+      type: object
+      properties:
+        id:
+          type: number
+        slug:
+          type: string
+        name:
+          type: string
+        eyebrow:
+          type: string
+        productCount:
+          type: number
+        accent:
+          type: string
+      required: [id, slug, name, eyebrow, productCount, accent]
+    Product:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        slug:
+          type: string
+        category:
+          type: string
+          enum: [clothing, scales]
+        categoryLabel:
+          type: string
+        price:
+          type: number
+        compareAtPrice:
+          type: ["number", "null"]
+        rating:
+          type: number
+        reviewCount:
+          type: number
+        image:
+          type: string
+        badge:
+          type: ["string", "null"]
+        description:
+          type: string
+        stock:
+          type: number
+        specs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductSpec"
+        options:
+          type: array
+          items:
+            type: string
+      required: [id, name, slug, category, categoryLabel, price, compareAtPrice, rating, reviewCount, image, badge, description, stock, specs, options]
+    ProductSpec:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: string
+      required: [label, value]
+    ProductInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+        category:
+          type: string
+          enum: [clothing, scales]
+        price:
+          type: number
+          minimum: 0
+        compareAtPrice:
+          type: ["number", "null"]
+          minimum: 0
+        image:
+          type: string
+        badge:
+          type: ["string", "null"]
+        description:
+          type: string
+          minLength: 5
+        stock:
+          type: number
+          minimum: 0
+        options:
+          type: array
+          items:
+            type: string
+        specs:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductSpec"
+      required: [name, category, price, image, description, stock]
+    AdminLoginInput:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+      required: [username, password]
+    AdminSession:
+      type: object
+      properties:
+        authenticated:
+          type: boolean
+        username:
+          type: string
+      required: [authenticated, username]
+    LogoutResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required: [success]
+    OrderItemInput:
+      type: object
+      properties:
+        productId:
+          type: number
+        quantity:
+          type: number
+          minimum: 1
+        option:
+          type: ["string", "null"]
+      required: [productId, quantity]
+    OrderInput:
+      type: object
+      properties:
+        customerName:
+          type: string
+          minLength: 2
+        phone:
+          type: string
+          minLength: 8
+        address:
+          type: string
+          minLength: 5
+        city:
+          type: string
+          minLength: 2
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/OrderItemInput"
+      required: [customerName, phone, address, city, items]
+    Order:
+      type: object
+      properties:
+        id:
+          type: number
+        orderNumber:
+          type: string
+        customerName:
+          type: string
+        total:
+          type: number
+        status:
+          type: string
+          enum: [new, preparing, shipped, delivered, cancelled]
+        paymentStatus:
+          type: string
+          enum: [pending, collected]
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, orderNumber, customerName, total, status, paymentStatus, createdAt]
+    AdminOrderItem:
+      type: object
+      properties:
+        productId:
+          type: number
+        productName:
+          type: string
+        quantity:
+          type: number
+        option:
+          type: ["string", "null"]
+      required: [productId, productName, quantity, option]
+    AdminOrder:
+      type: object
+      properties:
+        id:
+          type: number
+        orderNumber:
+          type: string
+        customerName:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        total:
+          type: number
+        status:
+          type: string
+          enum: [new, preparing, shipped, delivered, cancelled]
+        paymentStatus:
+          type: string
+          enum: [pending, collected]
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminOrderItem"
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, orderNumber, customerName, phone, address, city, total, status, paymentStatus, items, createdAt]
+    OrderStatusInput:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [new, preparing, shipped, delivered, cancelled]
+      required: [status]
+    AdminOverview:
+      type: object
+      properties:
+        ordersToday:
+          type: number
+        revenueToday:
+          type: number
+        activeProducts:
+          type: number
+        lowStock:
+          type: number
+        pendingOrders:
+          type: number
+        sales:
+          type: array
+          items:
+            $ref: "#/components/schemas/SalesPoint"
+        topProducts:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopProduct"
+      required: [ordersToday, revenueToday, activeProducts, lowStock, pendingOrders, sales, topProducts]
+    SalesPoint:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: number
+      required: [label, value]
+    TopProduct:
+      type: object
+      properties:
+        name:
+          type: string
+        sold:
+          type: number
+        revenue:
+          type: number
+      required: [name, sold, revenue]
 

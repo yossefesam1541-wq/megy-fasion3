@@ -1,10 +1,21 @@
 import express, { type Express } from "express";
 import cors from "cors";
+import helmet from "helmet";
+import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
+
+// Allow-list of origins that are permitted to call the API with credentials.
+// STORE_ORIGIN should be set to the storefront's public URL in every environment.
+// Falls back to allowing any origin (without credentials leakage risk removed)
+// only when explicitly unset, so local/dev setups keep working.
+const allowedOrigins = (process.env.STORE_ORIGIN ?? "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 app.use(
   pinoHttp({
@@ -25,7 +36,18 @@ app.use(
     },
   }),
 );
-app.use(cors());
+app.use(helmet());
+app.use(
+  cors(
+    allowedOrigins.length
+      ? {
+          origin: allowedOrigins,
+          credentials: true,
+        }
+      : undefined,
+  ),
+);
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

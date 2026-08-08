@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Medy Tech"
+description = "Arabic RTL e-commerce storefront for Medy Tech, combining curated apparel and precision scales with shopping cart and cash-on-delivery checkout."
+version = "1.0.0"
+id = "artifacts/medy-tech"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21179
+
+[services.development]
+run = "pnpm --filter @workspace/medy-tech run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/medy-tech", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/medy-tech/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21179"
+BASE_PATH = "/"

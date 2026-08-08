@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/mt-control-7f3a/"
+title = "MEGY TEAC Admin"
+description = "Standalone Arabic RTL admin panel for managing Medy Tech products, orders, inventory, and store overview."
+version = "1.0.0"
+id = "artifacts/megy-teac-admin"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/mt-control-7f3a/" ]
+localPort = 18278
+
+[services.development]
+run = "pnpm --filter @workspace/megy-teac-admin run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/megy-teac-admin", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/megy-teac-admin/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18278"
+BASE_PATH = "/mt-control-7f3a/"
