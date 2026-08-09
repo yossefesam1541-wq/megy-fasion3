@@ -25,12 +25,14 @@ import type {
   AdminOverview,
   AdminSession,
   Category,
+  DeleteProductResult,
   HealthStatus,
   ListProductsParams,
   LogoutResult,
   Order,
   OrderInput,
   OrderStatusInput,
+  OrderTracking,
   Product,
   ProductInput
 } from './api.schemas';
@@ -448,6 +450,83 @@ export const useCreateOrder = <TError = ErrorType<void>,
       > => {
       return useMutation(getCreateOrderMutationOptions(options));
     }
+
+export const getGetOrderTrackingUrl = (orderNumber: string,) => {
+
+
+
+
+  return `/api/orders/${orderNumber}`
+}
+
+/**
+ * @summary Get public order tracking details
+ */
+export const getOrderTracking = async (orderNumber: string, options?: Parameters<typeof customFetch>[1]): Promise<OrderTracking> => {
+
+  return customFetch<OrderTracking>(getGetOrderTrackingUrl(orderNumber),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetOrderTrackingQueryKey = (orderNumber: string,) => {
+    return [
+    `/api/orders/${orderNumber}`
+    ] as const;
+    }
+
+
+export const getGetOrderTrackingQueryOptions = <TData = Awaited<ReturnType<typeof getOrderTracking>>, TError = ErrorType<void>>(orderNumber: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOrderTracking>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderTrackingQueryKey(orderNumber);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrderTracking>>> = ({ signal }) => getOrderTracking(orderNumber, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: orderNumber !== null && orderNumber !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOrderTracking>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetOrderTrackingQueryResult = NonNullable<Awaited<ReturnType<typeof getOrderTracking>>>
+export type GetOrderTrackingQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get public order tracking details
+ */
+
+export function useGetOrderTracking<TData = Awaited<ReturnType<typeof getOrderTracking>>, TError = ErrorType<void>>(
+ orderNumber: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOrderTracking>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetOrderTrackingQueryOptions(orderNumber,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getGetAdminOverviewUrl = () => {
 
@@ -891,6 +970,77 @@ export const useCreateAdminProduct = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getCreateAdminProductMutationOptions(options));
+    }
+
+export const getDeleteAdminProductUrl = (id: number,) => {
+
+
+
+
+  return `/api/admin/products/${id}`
+}
+
+/**
+ * @summary Delete a product from the catalog
+ */
+export const deleteAdminProduct = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<DeleteProductResult> => {
+
+  return customFetch<DeleteProductResult>(getDeleteAdminProductUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteAdminProductMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminProduct>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminProduct>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteAdminProduct'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminProduct>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteAdminProduct(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAdminProductMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminProduct>>>
+
+    export type DeleteAdminProductMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a product from the catalog
+ */
+export const useDeleteAdminProduct = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminProduct>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAdminProduct>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteAdminProductMutationOptions(options));
     }
 
 export const getListAdminOrdersUrl = () => {

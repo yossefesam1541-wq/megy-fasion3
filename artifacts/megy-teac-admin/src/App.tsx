@@ -8,6 +8,7 @@ import {
   useAdminLogin,
   useAdminLogout,
   useCreateAdminProduct,
+  useDeleteAdminProduct,
   useGetAdminOverview,
   useGetAdminSession,
   useListAdminOrders,
@@ -16,7 +17,7 @@ import {
 } from '@workspace/api-client-react';
 import type { AdminOrder, AdminOverview, ProductInput } from '@workspace/api-client-react';
 import {
-  ArrowUpRight, BarChart3, ChevronDown, Clock3, LogOut, PackageCheck, Plus, ShoppingBag, Zap,
+  ArrowUpRight, BarChart3, ChevronDown, Clock3, LogOut, PackageCheck, Plus, ShoppingBag, Trash2, Zap,
 } from 'lucide-react';
 import { useState } from 'react';
 import './index.css';
@@ -99,6 +100,7 @@ function AdminPage({ username }: { username: string }) {
   const productsQuery = useListAdminProducts({ query: { queryKey: getListAdminProductsQueryKey() } });
   const ordersQuery = useListAdminOrders({ query: { queryKey: getListAdminOrdersQueryKey() } });
   const createProduct = useCreateAdminProduct();
+  const deleteProduct = useDeleteAdminProduct();
   const updateOrderStatus = useUpdateAdminOrderStatus();
   const [form, setForm] = useState({
     name: '',
@@ -162,6 +164,16 @@ function AdminPage({ username }: { username: string }) {
       },
     });
   };
+  const removeProduct = (id: number, name: string) => {
+    if (!window.confirm(`حذف "${name}" من المتجر؟`)) return;
+    deleteProduct.mutate({ id }, {
+      onSuccess: () => {
+        void queryClientLocal.invalidateQueries({ queryKey: getListAdminProductsQueryKey() });
+        void queryClientLocal.invalidateQueries({ queryKey: getListProductsQueryKey({ limit: 6, sort: 'newest' }) });
+        void queryClientLocal.invalidateQueries({ queryKey: getGetAdminOverviewQueryKey() });
+      },
+    });
+  };
   const logout = useAdminLogout();
   const signOut = () => {
     logout.mutate(undefined, {
@@ -206,7 +218,7 @@ function AdminPage({ username }: { username: string }) {
 
       <section className="rounded-2xl border bg-card p-5 md:p-7">
         <div className="flex items-center justify-between gap-4"><div><h2 className="font-bold">المنتجات الموجودة</h2><p className="mt-1 text-xs text-muted-foreground">{products.length} منتج محفوظ في قاعدة البيانات</p></div></div>
-        {productsQuery.isLoading ? <div className="mt-6 grid gap-3">{[1, 2, 3].map((i) => <div className="skeleton h-16 rounded-xl" key={i} />)}</div> : products.length ? <div className="mt-6 overflow-x-auto"><table className="w-full min-w-[560px] text-right text-sm"><thead><tr className="border-b text-xs text-muted-foreground"><th className="pb-3 font-semibold">المنتج</th><th className="pb-3 font-semibold">القسم</th><th className="pb-3 font-semibold">السعر</th><th className="pb-3 font-semibold">المخزون</th></tr></thead><tbody>{products.map((product) => <tr className="border-b last:border-0" key={product.id}><td className="py-4"><div className="flex items-center gap-3"><img src={product.image} alt="" className="size-11 rounded-lg object-cover" /><span className="font-semibold">{product.name}</span></div></td><td className="py-4 text-muted-foreground">{product.categoryLabel}</td><td className="py-4 font-semibold whitespace-nowrap">{formatPrice(product.price)}</td><td className={`py-4 font-semibold ${product.stock <= 8 ? 'text-destructive' : ''}`}>{product.stock}</td></tr>)}</tbody></table></div> : <p className="mt-8 rounded-xl bg-muted p-5 text-center text-sm text-muted-foreground">لا توجد منتجات في قاعدة البيانات بعد.</p>}
+       {productsQuery.isLoading ? <div className="mt-6 grid gap-3">{[1, 2, 3].map((i) => <div className="skeleton h-16 rounded-xl" key={i} />)}</div> : products.length ? <div className="mt-6 overflow-x-auto"><table className="w-full min-w-[680px] text-right text-sm"><thead><tr className="border-b text-xs text-muted-foreground"><th className="pb-3 font-semibold">المنتج</th><th className="pb-3 font-semibold">القسم</th><th className="pb-3 font-semibold">السعر</th><th className="pb-3 font-semibold">المخزون</th><th className="pb-3 text-left font-semibold">إجراء</th></tr></thead><tbody>{products.map((product) => <tr className="border-b last:border-0" key={product.id}><td className="py-4"><div className="flex items-center gap-3"><img src={product.image} alt="" className="size-11 rounded-lg object-cover" /><span className="font-semibold">{product.name}</span></div></td><td className="py-4 text-muted-foreground">{product.categoryLabel}</td><td className="py-4 font-semibold whitespace-nowrap">{formatPrice(product.price)}</td><td className={`py-4 font-semibold ${product.stock <= 8 ? 'text-destructive' : ''}`}>{product.stock}</td><td className="py-4 text-left"><button type="button" onClick={() => removeProduct(product.id, product.name)} disabled={deleteProduct.isPending} className="inline-flex items-center gap-1.5 rounded-lg bg-destructive/10 px-3 py-2 text-xs font-bold text-destructive transition hover:bg-destructive hover:text-destructive-foreground disabled:opacity-50" data-testid={`button-delete-product-${product.id}`}><Trash2 size={14} /> حذف</button></td></tr>)}</tbody></table></div> : <p className="mt-8 rounded-xl bg-muted p-5 text-center text-sm text-muted-foreground">لا توجد منتجات في قاعدة البيانات بعد.</p>}
       </section>
     </div>
 

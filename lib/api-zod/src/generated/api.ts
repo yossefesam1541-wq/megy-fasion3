@@ -136,6 +136,32 @@ export const CreateOrderResponse = zod.object({
 
 
 /**
+ * @summary Get public order tracking details
+ */
+export const getOrderTrackingPathOrderNumberMin = 3;
+
+
+
+export const GetOrderTrackingParams = zod.object({
+  "orderNumber": zod.coerce.string().min(getOrderTrackingPathOrderNumberMin)
+})
+
+export const GetOrderTrackingResponse = zod.object({
+  "orderNumber": zod.string(),
+  "total": zod.number(),
+  "status": zod.enum(['new', 'preparing', 'shipped', 'delivered', 'cancelled']),
+  "paymentStatus": zod.enum(['pending', 'collected']),
+  "items": zod.array(zod.object({
+  "productId": zod.number(),
+  "productName": zod.string(),
+  "quantity": zod.number(),
+  "option": zod.string().nullable()
+})),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
  * @summary Get admin dashboard summary
  */
 export const GetAdminOverviewResponse = zod.object({
@@ -267,6 +293,19 @@ export const CreateAdminProductResponse = zod.object({
   "value": zod.string()
 })),
   "options": zod.array(zod.string())
+})
+
+
+/**
+ * @summary Delete a product from the catalog
+ */
+export const DeleteAdminProductParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteAdminProductResponse = zod.object({
+  "success": zod.boolean(),
+  "id": zod.number()
 })
 
 

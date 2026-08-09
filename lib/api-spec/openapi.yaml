@@ -116,6 +116,27 @@ paths:
                 $ref: "#/components/schemas/Order"
         "400":
           description: Invalid order
+  /orders/{orderNumber}:
+    get:
+      operationId: getOrderTracking
+      tags: [storefront]
+      summary: Get public order tracking details
+      parameters:
+        - name: orderNumber
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 3
+      responses:
+        "200":
+          description: Order tracking details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderTracking"
+        "404":
+          description: Order not found
   /admin/overview:
     get:
       operationId: getAdminOverview
@@ -207,6 +228,26 @@ paths:
                 $ref: "#/components/schemas/Product"
         "400":
           description: Invalid product
+  /admin/products/{id}:
+    delete:
+      operationId: deleteAdminProduct
+      tags: [admin]
+      summary: Delete a product from the catalog
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Deleted product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteProductResult"
+        "404":
+          description: Product not found
   /admin/orders:
     get:
       operationId: listAdminOrders
@@ -430,6 +471,35 @@ components:
           type: string
           format: date-time
       required: [id, orderNumber, customerName, total, status, paymentStatus, createdAt]
+    OrderTracking:
+      type: object
+      properties:
+        orderNumber:
+          type: string
+        total:
+          type: number
+        status:
+          type: string
+          enum: [new, preparing, shipped, delivered, cancelled]
+        paymentStatus:
+          type: string
+          enum: [pending, collected]
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminOrderItem"
+        createdAt:
+          type: string
+          format: date-time
+      required: [orderNumber, total, status, paymentStatus, items, createdAt]
+    DeleteProductResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        id:
+          type: number
+      required: [success, id]
     AdminOrderItem:
       type: object
       properties:

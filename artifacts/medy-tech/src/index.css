@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
@@ -50,7 +50,7 @@
   --destructive: 3 64% 48%;
   --destructive-foreground: 39 46% 98%;
   --app-font-sans: 'IBM Plex Sans Arabic', sans-serif;
-  --app-font-serif: 'Playfair Display', serif;
+  --app-font-serif: 'Amiri', serif;
   --app-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius: 1rem;
   --shadow-card: 0 20px 50px -28px hsl(231 34% 15% / .28);
@@ -93,7 +93,8 @@
 .skeleton { background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--card)) 50%, hsl(var(--muted)) 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
 .container-shell { width: min(100% - 3rem, 1240px); margin-inline: auto; }
 .header-shell { width: min(100% - 3rem, 1240px); margin-inline: auto; }
-.display { font-family: var(--app-font-serif); letter-spacing: -.03em; }
+.display { font-family: var(--app-font-serif); letter-spacing: -.02em; line-height: 1.35; }
+.cart-line { min-width: 0; }
 .texture { position: relative; isolation: isolate; }
 .texture::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .16; z-index: -1; background-image: radial-gradient(hsl(var(--foreground) / .18) .6px, transparent .6px); background-size: 7px 7px; mask-image: linear-gradient(135deg, black, transparent 68%); }
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

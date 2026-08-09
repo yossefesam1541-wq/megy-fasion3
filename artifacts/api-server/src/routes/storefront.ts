@@ -11,6 +11,8 @@ import {
   GetAdminOverviewResponse,
   GetProductParams,
   GetProductResponse,
+  GetOrderTrackingParams,
+  GetOrderTrackingResponse,
   ListAdminOrdersResponse,
   ListAdminProductsResponse,
   ListCategoriesResponse,
@@ -292,6 +294,41 @@ router.post("/orders", createOrderLimiter, async (req, res): Promise<void> => {
   }
 });
 
+router.get("/orders/:orderNumber", async (req, res): Promise<void> => {
+  const parsed = GetOrderTrackingParams.safeParse(req.params);
+  if (!parsed.success) {
+    res.status(400).json({ error: "رقم الطلب غير صحيح" });
+    return;
+  }
+
+  const [order] = await db
+    .select()
+    .from(ordersTable)
+    .where(eq(ordersTable.orderNumber, parsed.data.orderNumber));
+  if (!order) {
+    res.status(404).json({ error: "لم نجد طلباً بهذا الرقم" });
+    return;
+  }
+
+  const products = await db.select().from(productsTable);
+  const productById = new Map(products.map((product) => [product.id, product]));
+  const items = (Array.isArray(order.items) ? order.items : []).map((item) => ({
+    productId: item.productId,
+    productName: productById.get(item.productId)?.name ?? `منتج #${item.productId}`,
+    quantity: item.quantity,
+    option: item.option ?? null,
+  }));
+
+  res.json(GetOrderTrackingResponse.parse({
+    orderNumber: order.orderNumber,
+    total: Number(order.total),
+    status: order.status,
+    paymentStatus: order.paymentStatus,
+    items,
+    createdAt: order.createdAt,
+  }));
+});
+
 router.post("/admin/auth/login", adminLoginLimiter, async (req, res): Promise<void> => {
   const parsed = AdminLoginBody.safeParse(req.body);
   if (!parsed.success) {
@@ -445,6 +482,25 @@ router.post("/admin/products", requireAdmin, async (req, res): Promise<void> => 
     .returning();
 
   res.status(201).json(CreateAdminProductResponse.parse(serializeProduct(product)));
+});
+
+router.delete("/admin/products/:id", requireAdmin, async (req, res): Promise<void> => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id < 1) {
+    res.status(400).json({ error: "معرّف المنتج غير صحيح" });
+    return;
+  }
+
+  const [deleted] = await db
+    .delete(productsTable)
+    .where(eq(productsTable.id, id))
+    .returning({ id: productsTable.id });
+  if (!deleted) {
+    res.status(404).json({ error: "المنتج غير موجود" });
+    return;
+  }
+
+  res.json({ success: true, id: deleted.id });
 });
 
 function serializeAdminOrder(

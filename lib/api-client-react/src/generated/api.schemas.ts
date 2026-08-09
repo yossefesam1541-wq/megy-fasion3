@@ -147,12 +147,45 @@ export interface Order {
   createdAt: string;
 }
 
+export type OrderTrackingStatus = typeof OrderTrackingStatus[keyof typeof OrderTrackingStatus];
+
+
+export const OrderTrackingStatus = {
+  new: 'new',
+  preparing: 'preparing',
+  shipped: 'shipped',
+  delivered: 'delivered',
+  cancelled: 'cancelled',
+} as const;
+
+export type OrderTrackingPaymentStatus = typeof OrderTrackingPaymentStatus[keyof typeof OrderTrackingPaymentStatus];
+
+
+export const OrderTrackingPaymentStatus = {
+  pending: 'pending',
+  collected: 'collected',
+} as const;
+
 export interface AdminOrderItem {
   productId: number;
   productName: string;
   quantity: number;
   /** @nullable */
   option: string | null;
+}
+
+export interface OrderTracking {
+  orderNumber: string;
+  total: number;
+  status: OrderTrackingStatus;
+  paymentStatus: OrderTrackingPaymentStatus;
+  items: AdminOrderItem[];
+  createdAt: string;
+}
+
+export interface DeleteProductResult {
+  success: boolean;
+  id: number;
 }
 
 export type AdminOrderStatus = typeof AdminOrderStatus[keyof typeof AdminOrderStatus];
