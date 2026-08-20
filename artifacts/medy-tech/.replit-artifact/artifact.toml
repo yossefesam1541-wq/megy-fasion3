@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "Medy Tech"
+title = "Megy teac"
 description = "Arabic RTL e-commerce storefront for Medy Tech, combining curated apparel and precision scales with shopping cart and cash-on-delivery checkout."
 version = "1.0.0"
 id = "artifacts/medy-tech"
