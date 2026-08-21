@@ -369,7 +369,7 @@ function Shell({
             <LogoMark size={44} />
             <span className="hidden text-right sm:block">
               <strong className="display block text-lg leading-none tracking-tight">
-                MEGY TEAC
+                MEGY Fashion
               </strong>
               <small className="mt-1 block text-[10px] tracking-[.22em] text-muted-foreground">
                 ONLINE STORE
@@ -702,7 +702,7 @@ function HomePage({ cart }: { cart: ReturnType<typeof useCart> }) {
               <Sparkles size={16} /> اعلي جوده واقل سعر
             </p>
             <h1 className="display max-w-[680px] text-5xl leading-[1.15] md:text-7xl">
-              MEGY TEAC
+              MEGY Fashion
               <br />
               <span className="text-secondary">رقم واحد في مصر.</span>
             </h1>
@@ -847,7 +847,7 @@ function HomePage({ cart }: { cart: ReturnType<typeof useCart> }) {
             <Trust
               icon={<CreditCard />}
               title="ادفع لما تستلم"
-              text="اطلب براحتك، والدفع نقدي عند الاستلام من غير تعقيد."
+              text="اطلب براحتك، والدفع نقدي عند الاستلام   ."
             />
           </div>
         </div>
