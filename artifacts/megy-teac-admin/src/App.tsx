@@ -20,9 +20,11 @@ import {
   ArrowUpRight, BarChart3, ChevronDown, Clock3, LogOut, PackageCheck, Plus, ShoppingBag, Trash2, Zap,
 } from 'lucide-react';
 import { useState } from 'react';
+import { setBaseUrl } from "@workspace/api-client-react";
 import './index.css';
 
 const queryClient = new QueryClient();
+setBaseUrl("https://megy-fasion3-api-server.vercel.app");
 
 function formatPrice(value: number) { return `${value.toLocaleString('ar-EG')} ج.م`; }
 
