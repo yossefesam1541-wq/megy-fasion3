@@ -1,11 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "pnpm run build && mkdir -p api && cp dist/vercel.mjs api/index.mjs",
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/index.mjs"
+      "destination": "/api/index"
     }
   ]
 }
