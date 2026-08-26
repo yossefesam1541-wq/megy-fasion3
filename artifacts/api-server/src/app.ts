@@ -1,13 +1,15 @@
 import express, { type Express } from "express";
 import cors from "cors";
-import helmetModule from "helmet";
+import { createRequire } from "node:module";
 import cookieParser from "cookie-parser";
-import pinoHttpModule from "pino-http";
+
 import router from "./routes";
 import { logger } from "./lib/logger";
 
-const helmet = helmetModule;
-const pinoHttp = pinoHttpModule;
+const require = createRequire(import.meta.url);
+const helmet = require("helmet");
+const pinoHttp = require("pino-http");
+
 
 
 const app: Express = express();
