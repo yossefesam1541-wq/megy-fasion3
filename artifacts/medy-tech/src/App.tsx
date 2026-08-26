@@ -419,7 +419,7 @@ function Shell({
               }
               data-testid="link-track"
             >
-              {" تتبع"}
+              {"تابع طلبك"}
             </Link>
           </nav>
           <div className="flex items-center gap-1">
@@ -487,7 +487,7 @@ function Shell({
                 className="rounded-xl px-3 py-2 hover:bg-muted"
                 data-testid="mobile-link-track"
               >
-                {" "}
+                {" تابع طلبك"}
               </Link>
             </div>
           </div>
