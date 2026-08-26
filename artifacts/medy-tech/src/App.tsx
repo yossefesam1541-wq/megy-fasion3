@@ -487,7 +487,7 @@ function Shell({
                 className="rounded-xl px-3 py-2 hover:bg-muted"
                 data-testid="mobile-link-track"
               >
-                {" تابع طلبك"}
+                {" تتبع طلبك"}
               </Link>
             </div>
           </div>
