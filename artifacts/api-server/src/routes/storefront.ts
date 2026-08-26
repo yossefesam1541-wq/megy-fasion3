@@ -34,7 +34,7 @@ const ADMIN_SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1000;
 // Brute-force protection for the admin login form.
 const adminLoginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 5,
+  limit: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many login attempts. Try again later." },
