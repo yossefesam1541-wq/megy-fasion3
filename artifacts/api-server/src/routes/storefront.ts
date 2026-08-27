@@ -349,8 +349,8 @@ router.post("/admin/auth/login", adminLoginLimiter, async (req, res): Promise<vo
 
   res.cookie(ADMIN_SESSION_COOKIE, createAdminSession(), {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    secure: true,
     maxAge: ADMIN_SESSION_MAX_AGE_MS,
     path: "/",
   });
@@ -366,7 +366,7 @@ router.get("/admin/auth/session", (req, res): void => {
 });
 
 router.post("/admin/auth/logout", (req, res): void => {
-  res.clearCookie(ADMIN_SESSION_COOKIE, { httpOnly: true, sameSite: "lax", path: "/" });
+  res.clearCookie(ADMIN_SESSION_COOKIE, { httpOnly: true, sameSite: "none", path: "/" });
   res.json({ success: true });
 });
 
