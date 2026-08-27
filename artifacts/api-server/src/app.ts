@@ -19,10 +19,13 @@ app.set("trust proxy", 1);
 // STORE_ORIGIN should be set to the storefront's public URL in every environment.
 // Falls back to allowing any origin (without credentials leakage risk removed)
 // only when explicitly unset, so local/dev setups keep working.
-const allowedOrigins = (process.env.STORE_ORIGIN ?? "")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = [
+  "https://megy-fasion3-megy-teac-admin.vercel.app",
+  ...(process.env.STORE_ORIGIN ?? "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+];
 
 app.use(
   pinoHttp({
