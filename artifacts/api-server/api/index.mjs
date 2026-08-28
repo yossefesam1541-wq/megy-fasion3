@@ -59053,7 +59053,7 @@ var ADMIN_SESSION_COOKIE = "medy_admin_session";
 var ADMIN_SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1e3;
 var adminLoginLimiter = rate_limit_default({
   windowMs: 15 * 60 * 1e3,
-  limit: 5,
+  limit: 1e3,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many login attempts. Try again later." }
@@ -59299,8 +59299,8 @@ router2.post("/admin/auth/login", adminLoginLimiter, async (req, res) => {
   }
   res.cookie(ADMIN_SESSION_COOKIE, createAdminSession(), {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    secure: true,
     maxAge: ADMIN_SESSION_MAX_AGE_MS,
     path: "/"
   });
@@ -59314,7 +59314,7 @@ router2.get("/admin/auth/session", (req, res) => {
   res.json({ authenticated: true, username: ADMIN_USERNAME });
 });
 router2.post("/admin/auth/logout", (req, res) => {
-  res.clearCookie(ADMIN_SESSION_COOKIE, { httpOnly: true, sameSite: "lax", path: "/" });
+  res.clearCookie(ADMIN_SESSION_COOKIE, { httpOnly: true, sameSite: "none", path: "/" });
   res.json({ success: true });
 });
 var ARABIC_DAY_LABELS = ["\u0627\u0644\u0623\u062D\u062F", "\u0627\u0644\u0625\u062B\u0646\u064A\u0646", "\u0627\u0644\u062B\u0644\u0627\u062B\u0627\u0621", "\u0627\u0644\u0623\u0631\u0628\u0639\u0627\u0621", "\u0627\u0644\u062E\u0645\u064A\u0633", "\u0627\u0644\u062C\u0645\u0639\u0629", "\u0627\u0644\u0633\u0628\u062A"];
@@ -59522,7 +59522,10 @@ var helmet = require2("helmet");
 var pinoHttp = require2("pino-http");
 var app = (0, import_express4.default)();
 app.set("trust proxy", 1);
-var allowedOrigins = (process.env.STORE_ORIGIN ?? "").split(",").map((origin) => origin.trim()).filter(Boolean);
+var allowedOrigins = [
+  "https://megy-fasion3-megy-teac-admin.vercel.app",
+  ...(process.env.STORE_ORIGIN ?? "").split(",").map((origin) => origin.trim()).filter(Boolean)
+];
 app.use(
   pinoHttp({
     logger,
