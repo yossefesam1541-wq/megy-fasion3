@@ -24,7 +24,7 @@ import { setBaseUrl } from "@workspace/api-client-react";
 import './index.css';
 
 const queryClient = new QueryClient();
-setBaseUrl("https://megy-fasion3-api-server.vercel.app");
+setBaseUrl("");
 
 function formatPrice(value: number) { return `${value.toLocaleString('ar-EG')} ج.م`; }
 
