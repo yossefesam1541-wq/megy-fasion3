@@ -685,12 +685,8 @@ function HomePage({ cart }: { cart: ReturnType<typeof useCart> }) {
       },
     },
   );
-  const categories = categoriesQuery.data?.length
-    ? categoriesQuery.data
-    : fallbackCategories;
-  const products = productsQuery.data?.length
-    ? productsQuery.data
-    : fallbackProducts;
+  const categories = categoriesQuery.data ?? [];
+  const products = productsQuery.data ?? [];
   return (
     <div>
       <section className="container-shell pb-10 pt-8 md:pb-16 md:pt-12">
@@ -903,10 +899,7 @@ function CategoryPage({
       },
     },
   );
-  const fallback = fallbackProducts.filter(
-    (p) => p.category === category && (!search || p.name.includes(search)),
-  );
-  const products = query.data?.length ? query.data : fallback;
+  const products = query.data ?? [];
   const title =
     category === "clothing" ? "ملابس ذات جوده عاليه" : "موازين ذات دقه عاليه";
   const intro =
@@ -1013,7 +1006,7 @@ function ProductPage({ cart }: { cart: ReturnType<typeof useCart> }) {
   const query = useGetProduct(id, {
     query: { enabled: !!id, queryKey: getGetProductQueryKey(id) },
   });
-  const product = query.data || fallbackProducts.find((item) => item.id === id);
+  const product = query.data;
   const [option, setOption] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);

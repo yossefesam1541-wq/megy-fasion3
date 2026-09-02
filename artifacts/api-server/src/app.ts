@@ -21,6 +21,7 @@ app.set("trust proxy", 1);
 // only when explicitly unset, so local/dev setups keep working.
 const allowedOrigins = [
   "https://megy-fasion3-megy-teac-admin.vercel.app",
+  "https://megy-fasion3-medy-tech.vercel.app",
   ...(process.env.STORE_ORIGIN ?? "")
     .split(",")
     .map((origin) => origin.trim())
